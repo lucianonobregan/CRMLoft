@@ -1008,17 +1008,33 @@ function avancarStep4() {
 // ══════════════════════════════════════════════════════
 // CIDADES POR UF
 // ══════════════════════════════════════════════════════
-function carregarCidades() {
+async function carregarCidades() {
   const uf  = document.getElementById('uf').value;
   const sel = document.getElementById('cidade');
-  sel.innerHTML = '<option value="">Selecione a cidade</option>';
+  sel.innerHTML = '<option value="">Carregando cidades...</option>';
+  sel.disabled = true;
   esconderErro('err-uf');
-  if (!uf || !cidades[uf]) return;
-  cidades[uf].sort().forEach(c => {
-    const o = document.createElement('option');
-    o.value = o.textContent = c;
-    sel.appendChild(o);
-  });
+  if (!uf) { sel.innerHTML = '<option value="">Selecione primeiro o estado</option>'; sel.disabled = false; return; }
+
+  try {
+    const resp = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
+    const lista = await resp.json();
+    sel.innerHTML = '<option value="">Selecione a cidade</option>';
+    lista.forEach(c => {
+      const o = document.createElement('option');
+      o.value = o.textContent = c.nome;
+      sel.appendChild(o);
+    });
+  } catch(e) {
+    // Fallback para lista local se API falhar
+    sel.innerHTML = '<option value="">Selecione a cidade</option>';
+    (cidades[uf] || []).sort().forEach(c => {
+      const o = document.createElement('option');
+      o.value = o.textContent = c;
+      sel.appendChild(o);
+    });
+  }
+  sel.disabled = false;
 }
 
 // ══════════════════════════════════════════════════════
