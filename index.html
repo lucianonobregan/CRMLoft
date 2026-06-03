@@ -1200,16 +1200,15 @@ async function enviarFormulario() {
   };
 
   // ── URL do Google Apps Script Web App ──
-  // Substitua pela URL gerada após implantar o script de integração
   const SHEET_URL = 'https://script.google.com/macros/s/AKfycbw4QglUWAJahFkoFRmIUvDJHXXaHfGdAj0H6m-LtsFamucZMCY00E6z6_9w2u5JCG9Uew/exec';
 
   try {
-    if (SHEET_URL !== 'https://script.google.com/macros/s/AKfycbw4QglUWAJahFkoFRmIUvDJHXXaHfGdAj0H6m-LtsFamucZMCY00E6z6_9w2u5JCG9Uew/exec') {
-      await fetch(SHEET_URL, {
-        method: 'POST',
-        mode:   'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(dados)
+    if (SHEET_URL !== 'SUA_URL_AQUI') {
+      // Envia via GET (sem problemas de CORS com Google Apps Script)
+      const params = new URLSearchParams(dados).toString();
+      await fetch(SHEET_URL + '?' + params, {
+        method: 'GET',
+        mode:   'no-cors'
       });
     } else {
       // Modo demo: simula envio com delay
